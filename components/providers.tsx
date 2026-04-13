@@ -14,7 +14,7 @@ export function Providers({
 }) {
   return (
     <SessionProvider>
-      <NextIntlClientProvider locale={locale} messages={messages}>
+      <NextIntlClientProvider locale={locale} timeZone="America/Sao_Paulo" messages={messages}>
         {children}
       </NextIntlClientProvider>
     </SessionProvider>

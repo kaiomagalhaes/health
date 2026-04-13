@@ -44,7 +44,8 @@
     "dashboard": "Painel",
     "persons": "Pessoas",
     "appointments": "Consultas",
-    "documents": "Documentos"
+    "documents": "Documentos",
+    "accesses": "Acessos"
   },
   "dashboard": {
     "title": "Painel",
@@ -141,6 +142,26 @@
     },
     "preview": "Visualizar",
     "download": "Baixar"
+  },
+  "accesses": {
+    "title": "Acessos",
+    "newAccess": "Novo acesso",
+    "editAccess": "Editar acesso",
+    "websiteUrl": "URL do site",
+    "login": "Login",
+    "password": "Senha",
+    "description": "Descrição",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "copyLogin": "Copiar login",
+    "copyPassword": "Copiar senha",
+    "copied": "Copiado!",
+    "openWebsite": "Abrir site",
+    "created": "Acesso criado com sucesso!",
+    "updated": "Acesso atualizado com sucesso!",
+    "deleted": "Acesso excluído com sucesso!",
+    "noAccesses": "Nenhum acesso cadastrado",
+    "confirmDelete": "Tem certeza que deseja excluir este acesso?"
   },
   "validation": {
     "required": "Este campo é obrigatório",

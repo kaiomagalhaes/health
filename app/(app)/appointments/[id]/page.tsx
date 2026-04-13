@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getAppointment } from "@/actions/appointments";
 import { getDocuments } from "@/actions/documents";
+import { getAccesses } from "@/actions/accesses";
+import { AccessForm } from "@/components/accesses/access-form";
+import { AccessList } from "@/components/accesses/access-list";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -28,7 +31,11 @@ export default async function AppointmentDetailPage({
 
   const t = await getTranslations("appointments");
   const tDocs = await getTranslations("documents");
-  const documents = await getDocuments({ appointmentId: id });
+  const tAccesses = await getTranslations("accesses");
+  const [documents, accesses] = await Promise.all([
+    getDocuments({ appointmentId: id }),
+    getAccesses({ appointmentId: id }),
+  ]);
 
   return (
     <>
@@ -119,6 +126,19 @@ export default async function AppointmentDetailPage({
               appointmentId={appointment.id}
             />
             <DocumentList documents={documents} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{tAccesses("title")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <AccessForm
+              personId={appointment.personId}
+              appointmentId={appointment.id}
+            />
+            <AccessList accesses={accesses} />
           </CardContent>
         </Card>
       </main>

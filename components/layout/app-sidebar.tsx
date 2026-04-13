@@ -41,7 +41,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="border-b px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <Heart className="h-5 w-5 text-primary" />
+          <Heart className="h-5 w-5 text-sidebar-primary fill-sidebar-primary/20" />
           <span>{tCommon("appName")}</span>
         </Link>
       </SidebarHeader>
