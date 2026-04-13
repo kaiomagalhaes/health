@@ -1,5 +1,4 @@
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
+import { Navbar } from "@/components/layout/navbar";
 
 export default function AppLayout({
   children,
@@ -7,11 +6,11 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="flex flex-col flex-1">
+    <>
+      <Navbar />
+      <div className="mx-auto max-w-7xl flex-1 flex flex-col">
         {children}
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </>
   );
 }

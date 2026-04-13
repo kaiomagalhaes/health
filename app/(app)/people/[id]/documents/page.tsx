@@ -8,7 +8,7 @@ import { DocumentList } from "@/components/documents/document-list";
 import { FileUpload } from "@/components/documents/file-upload";
 import { AccessForm } from "@/components/accesses/access-form";
 import { AccessList } from "@/components/accesses/access-list";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, SectionHeader } from "@codelittinc/backstage-design-system";
 
 export default async function PersonDocumentsPage({
   params,
@@ -30,23 +30,19 @@ export default async function PersonDocumentsPage({
     <>
       <Header title={`${person.fullName} - ${tDocs("title")}`} />
       <main className="flex-1 p-6 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>{tDocs("upload")}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card padding="lg">
+          <SectionHeader>{tDocs("upload")}</SectionHeader>
+          <div className="mt-4">
             <FileUpload personId={id} />
-          </CardContent>
+          </div>
         </Card>
         <DocumentList documents={documents} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{tAccesses("newAccess")}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card padding="lg">
+          <SectionHeader>{tAccesses("newAccess")}</SectionHeader>
+          <div className="mt-4">
             <AccessForm personId={id} />
-          </CardContent>
+          </div>
         </Card>
         <AccessList accesses={accesses} />
       </main>

@@ -7,14 +7,8 @@ import {
   updateAppointmentStatus,
   deleteAppointment,
 } from "@/actions/appointments";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button, FormSelect } from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import type { AppointmentStatus } from "@/types";
 import { Trash2 } from "lucide-react";
-import { toast } from "sonner";
 
 export function AppointmentStatusSelect({
   appointmentId,
@@ -37,6 +30,10 @@ export function AppointmentStatusSelect({
   const t = useTranslations("appointments");
   const [status, setStatus] = useState(currentStatus);
 
+  const statusOptions = ["scheduled", "in_progress", "completed", "cancelled"].map(
+    (s) => ({ value: s, label: t(`statuses.${s}`) })
+  );
+
   async function handleChange(value: string | null) {
     if (!value) return;
     const s = value as AppointmentStatus;
@@ -46,20 +43,11 @@ export function AppointmentStatusSelect({
   }
 
   return (
-    <Select value={status} onValueChange={handleChange}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue>{t(`statuses.${status}`)}</SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {(
-          ["scheduled", "in_progress", "completed", "cancelled"] as const
-        ).map((s) => (
-          <SelectItem key={s} value={s}>
-            {t(`statuses.${s}`)}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <FormSelect
+      value={status}
+      onChange={handleChange}
+      options={statusOptions}
+    />
   );
 }
 
@@ -85,11 +73,7 @@ export function DeleteAppointmentButton({
 
   return (
     <>
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => setOpen(true)}
-      >
+      <Button variant="danger" size="sm" onClick={() => setOpen(true)}>
         <Trash2 className="h-4 w-4 mr-1" />
         {tCommon("delete")}
       </Button>
@@ -100,14 +84,10 @@ export function DeleteAppointmentButton({
             <DialogDescription>{t("confirmDelete")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
               {tCommon("cancel")}
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={loading}
-            >
+            <Button variant="danger" onClick={handleDelete} disabled={loading}>
               {loading ? "..." : tCommon("delete")}
             </Button>
           </DialogFooter>

@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getPerson } from "@/actions/persons";
 import { Header } from "@/components/layout/header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@codelittinc/backstage-design-system";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { buttonVariants } from "@/components/ui/button";
 import { DeletePersonButton } from "@/components/persons/delete-person-button";
 import { format, differenceInYears } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -38,52 +37,50 @@ export default async function PersonDetailPage({
     <>
       <Header title={person.fullName} />
       <main className="flex-1 p-6 space-y-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16">
-                  <AvatarFallback className="text-lg">
-                    {getInitials(person.fullName)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-xl">{person.fullName}</CardTitle>
-                  <p className="text-muted-foreground">
-                    {format(dob, "dd/MM/yyyy", { locale: ptBR })} &middot;{" "}
-                    {age} {t("age").toLowerCase()}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Link
-                  href={`/people/${person.id}/edit`}
-                  className={buttonVariants({ variant: "outline", size: "sm" })}
-                >
-                  <Pencil className="h-4 w-4 mr-1" />
-                  {t("editPerson")}
-                </Link>
-                <DeletePersonButton personId={person.id} />
+        <Card padding="lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-16 w-16">
+                <AvatarFallback className="text-lg">
+                  {getInitials(person.fullName)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h2 className="text-xl font-semibold">{person.fullName}</h2>
+                <p className="text-gray-500">
+                  {format(dob, "dd/MM/yyyy", { locale: ptBR })} &middot;{" "}
+                  {age} {t("age").toLowerCase()}
+                </p>
               </div>
             </div>
-          </CardHeader>
+            <div className="flex gap-2">
+              <Link
+                href={`/people/${person.id}/edit`}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Pencil className="h-4 w-4" />
+                {t("editPerson")}
+              </Link>
+              <DeletePersonButton personId={person.id} />
+            </div>
+          </div>
         </Card>
 
         <div className="grid gap-4 md:grid-cols-2">
           <Link href={`/people/${person.id}/appointments`}>
-            <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-              <CardContent className="flex items-center gap-3 p-4">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center gap-3 p-4">
+                <Calendar className="h-5 w-5 text-gray-400" />
                 <span className="font-medium">{tNav("appointments")}</span>
-              </CardContent>
+              </div>
             </Card>
           </Link>
           <Link href={`/people/${person.id}/documents`}>
-            <Card className="hover:bg-muted/50 transition-colors cursor-pointer">
-              <CardContent className="flex items-center gap-3 p-4">
-                <FileText className="h-5 w-5 text-muted-foreground" />
+            <Card className="hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center gap-3 p-4">
+                <FileText className="h-5 w-5 text-gray-400" />
                 <span className="font-medium">{tNav("documents")}</span>
-              </CardContent>
+              </div>
             </Card>
           </Link>
         </div>

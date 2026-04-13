@@ -6,8 +6,7 @@ import { getAccesses } from "@/actions/accesses";
 import { AccessForm } from "@/components/accesses/access-form";
 import { AccessList } from "@/components/accesses/access-list";
 import { Header } from "@/components/layout/header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
+import { Card, SectionHeader } from "@codelittinc/backstage-design-system";
 import { ClinicalNotesEditor } from "@/components/appointments/clinical-notes-editor";
 import {
   AppointmentStatusSelect,
@@ -45,101 +44,89 @@ export default async function AppointmentDetailPage({
         )}`}
       />
       <main className="flex-1 p-6 space-y-6">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  {format(new Date(appointment.dateTime), "dd/MM/yyyy HH:mm", {
-                    locale: ptBR,
-                  })}
-                  {" - "}
-                  {appointment.durationMinutes} min
+        <Card padding="lg">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Clock className="h-4 w-4" />
+                {format(new Date(appointment.dateTime), "dd/MM/yyyy HH:mm", {
+                  locale: ptBR,
+                })}
+                {" - "}
+                {appointment.durationMinutes} min
+              </div>
+              {appointment.person && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <User className="h-4 w-4" />
+                  <Link
+                    href={`/people/${appointment.personId}`}
+                    className="hover:underline text-primary"
+                  >
+                    {appointment.person.fullName}
+                  </Link>
                 </div>
-                {appointment.person && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <User className="h-4 w-4" />
-                    <Link
-                      href={`/people/${appointment.personId}`}
-                      className="hover:underline"
-                    >
-                      {appointment.person.fullName}
-                    </Link>
-                  </div>
-                )}
-                {appointment.doctorName && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Stethoscope className="h-4 w-4" />
-                    {appointment.doctorName}
-                    {appointment.specialty &&
-                      ` (${appointment.specialty})`}
-                  </div>
-                )}
-                {appointment.location && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
-                    {appointment.location}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <AppointmentStatusSelect
-                  appointmentId={appointment.id}
-                  currentStatus={appointment.status}
-                />
-                <Link
-                  href={`/appointments/${appointment.id}/edit`}
-                  className={buttonVariants({
-                    variant: "outline",
-                    size: "sm",
-                  })}
-                >
-                  <Pencil className="h-4 w-4 mr-1" />
-                  {t("editAppointment")}
-                </Link>
-                <DeleteAppointmentButton appointmentId={appointment.id} />
-              </div>
+              )}
+              {appointment.doctorName && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Stethoscope className="h-4 w-4" />
+                  {appointment.doctorName}
+                  {appointment.specialty && ` (${appointment.specialty})`}
+                </div>
+              )}
+              {appointment.location && (
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <MapPin className="h-4 w-4" />
+                  {appointment.location}
+                </div>
+              )}
             </div>
-          </CardHeader>
+            <div className="flex items-center gap-2">
+              <AppointmentStatusSelect
+                appointmentId={appointment.id}
+                currentStatus={appointment.status}
+              />
+              <Link
+                href={`/appointments/${appointment.id}/edit`}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Pencil className="h-4 w-4" />
+                {t("editAppointment")}
+              </Link>
+              <DeleteAppointmentButton appointmentId={appointment.id} />
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("notes")}</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card padding="lg">
+          <SectionHeader>{t("notes")}</SectionHeader>
+          <div className="mt-4">
             <ClinicalNotesEditor
               appointmentId={appointment.id}
               initialContent={appointment.notes}
             />
-          </CardContent>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{tDocs("title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Card padding="lg">
+          <SectionHeader>{tDocs("title")}</SectionHeader>
+          <div className="mt-4 space-y-4">
             <FileUpload
               personId={appointment.personId}
               appointmentId={appointment.id}
             />
             <DocumentList documents={documents} />
-          </CardContent>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{tAccesses("title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <Card padding="lg">
+          <SectionHeader>{tAccesses("title")}</SectionHeader>
+          <div className="mt-4 space-y-4">
             <AccessForm
               personId={appointment.personId}
               appointmentId={appointment.id}
             />
             <AccessList accesses={accesses} />
-          </CardContent>
+          </div>
         </Card>
       </main>
     </>

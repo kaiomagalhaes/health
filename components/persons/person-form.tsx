@@ -7,18 +7,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { personSchema, type PersonInput } from "@/lib/validators/person";
 import { createPerson, updatePerson } from "@/actions/persons";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
+  Button,
   Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  FormInput,
+  FormLabel,
+  SectionHeader,
+} from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import type { SerializedPerson } from "@/types";
-import { toast } from "sonner";
 
 interface PersonFormProps {
   person?: SerializedPerson;
@@ -61,47 +58,41 @@ export function PersonForm({ person }: PersonFormProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{person ? t("editPerson") : t("newPerson")}</CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">{t("fullName")}</Label>
-            <Input id="fullName" type="text" {...register("fullName")} />
-            {errors.fullName && (
-              <p className="text-sm text-destructive">
-                {errors.fullName.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="dateOfBirth">{t("dateOfBirth")}</Label>
-            <Input
-              id="dateOfBirth"
-              type="date"
-              {...register("dateOfBirth")}
-            />
-            {errors.dateOfBirth && (
-              <p className="text-sm text-destructive">
-                {errors.dateOfBirth.message}
-              </p>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter className="flex gap-3">
-          <Button type="submit" disabled={loading}>
+    <Card padding="lg">
+      <SectionHeader>{person ? t("editPerson") : t("newPerson")}</SectionHeader>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
+        <div className="space-y-1.5">
+          <FormLabel htmlFor="fullName" required>{t("fullName")}</FormLabel>
+          <FormInput
+            id="fullName"
+            type="text"
+            error={!!errors.fullName}
+            {...register("fullName")}
+          />
+          {errors.fullName && (
+            <p className="text-sm text-red-500">{errors.fullName.message}</p>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <FormLabel htmlFor="dateOfBirth" required>{t("dateOfBirth")}</FormLabel>
+          <FormInput
+            id="dateOfBirth"
+            type="date"
+            error={!!errors.dateOfBirth}
+            {...register("dateOfBirth")}
+          />
+          {errors.dateOfBirth && (
+            <p className="text-sm text-red-500">{errors.dateOfBirth.message}</p>
+          )}
+        </div>
+        <div className="flex gap-3 pt-2">
+          <Button variant="primary" disabled={loading}>
             {loading ? "..." : tCommon("save")}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
+          <Button type="button" variant="secondary" onClick={() => router.back()}>
             {tCommon("cancel")}
           </Button>
-        </CardFooter>
+        </div>
       </form>
     </Card>
   );

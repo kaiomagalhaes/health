@@ -3,7 +3,6 @@ import { getAppointments } from "@/actions/appointments";
 import { Header } from "@/components/layout/header";
 import { AppointmentList } from "@/components/appointments/appointment-list";
 import { AppointmentFilters } from "@/components/appointments/appointment-filters";
-import { buttonVariants } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 
@@ -28,9 +27,9 @@ export default async function AppointmentsPage({
           <AppointmentFilters />
           <Link
             href="/appointments/new"
-            className={buttonVariants({ variant: "default" })}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
           >
-            <Plus className="h-4 w-4 mr-1" />
+            <Plus className="h-4 w-4" />
             {t("newAppointment")}
           </Link>
         </div>

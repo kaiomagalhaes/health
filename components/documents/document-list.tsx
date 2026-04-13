@@ -6,9 +6,8 @@ import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { deleteDocument } from "@/actions/documents";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, Button, Tag, EmptyState } from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +26,6 @@ import {
   Trash2,
 } from "lucide-react";
 import type { SerializedDocument } from "@/types";
-import { toast } from "sonner";
 
 function getFileIcon(fileType: string) {
   if (fileType.startsWith("image/")) return Image;
@@ -41,6 +39,14 @@ function formatFileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
+
+const categoryVariant: Record<string, "blue" | "green" | "gray" | "red" | "yellow" | "purple"> = {
+  exam: "blue",
+  prescription: "green",
+  recording: "purple",
+  report: "yellow",
+  other: "gray",
+};
 
 export function DocumentList({
   documents,
@@ -56,9 +62,10 @@ export function DocumentList({
 
   if (documents.length === 0) {
     return (
-      <p className="text-center text-muted-foreground py-8">
-        {t("noDocuments")}
-      </p>
+      <EmptyState
+        message={t("noDocuments")}
+        icon={<FileText className="h-8 w-8" />}
+      />
     );
   }
 
@@ -79,13 +86,13 @@ export function DocumentList({
           const Icon = getFileIcon(doc.fileType);
           return (
             <Card key={doc.id}>
-              <CardContent className="flex items-center gap-3 p-3">
-                <Icon className="h-5 w-5 text-muted-foreground shrink-0" />
+              <div className="flex items-center gap-3 p-3">
+                <Icon className="h-5 w-5 text-gray-400 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">
                     {doc.fileName}
                   </p>
-                  <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  <div className="flex flex-wrap gap-2 text-xs text-gray-500">
                     <span>{formatFileSize(doc.fileSize)}</span>
                     <span>
                       {format(new Date(doc.createdAt), "dd/MM/yyyy", {
@@ -95,39 +102,34 @@ export function DocumentList({
                     {doc.person && <span>{doc.person.fullName}</span>}
                   </div>
                 </div>
-                <Badge variant="outline" className="shrink-0">
+                <Tag variant={categoryVariant[doc.category] ?? "gray"}>
                   {t(`categories.${doc.category}`)}
-                </Badge>
+                </Tag>
                 <div className="flex gap-1 shrink-0">
                   {(doc.fileType.startsWith("image/") ||
                     doc.fileType === "application/pdf" ||
                     doc.fileType.startsWith("audio/")) && (
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
+                    <button
+                      className="p-1.5 rounded hover:bg-gray-100"
                       onClick={() => setPreviewDoc(doc)}
                     >
-                      <Eye className="h-3.5 w-3.5" />
-                    </Button>
+                      <Eye className="h-3.5 w-3.5 text-gray-500" />
+                    </button>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() => {
-                      window.open(`/api/files/${doc.id}`, "_blank");
-                    }}
+                  <button
+                    className="p-1.5 rounded hover:bg-gray-100"
+                    onClick={() => window.open(`/api/files/${doc.id}`, "_blank")}
                   >
-                    <Download className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
+                    <Download className="h-3.5 w-3.5 text-gray-500" />
+                  </button>
+                  <button
+                    className="p-1.5 rounded hover:bg-gray-100"
                     onClick={() => setDeleteId(doc.id)}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                    <Trash2 className="h-3.5 w-3.5 text-gray-500" />
+                  </button>
                 </div>
-              </CardContent>
+              </div>
             </Card>
           );
         })}
@@ -179,14 +181,10 @@ export function DocumentList({
             <DialogDescription>{t("confirmDelete")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+            <Button variant="secondary" onClick={() => setDeleteId(null)}>
               {tCommon("cancel")}
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
+            <Button variant="danger" onClick={handleDelete} disabled={deleting}>
               {deleting ? "..." : tCommon("delete")}
             </Button>
           </DialogFooter>

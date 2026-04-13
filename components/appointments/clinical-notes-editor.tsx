@@ -6,9 +6,9 @@ import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import { useTranslations } from "next-intl";
 import { updateAppointmentNotes } from "@/actions/appointments";
-import { Button } from "@/components/ui/button";
+import { Button } from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import { Bold, Italic, List, ListOrdered, Heading2 } from "lucide-react";
-import { toast } from "sonner";
 
 interface ClinicalNotesEditorProps {
   appointmentId: string;
@@ -69,65 +69,50 @@ export function ClinicalNotesEditor({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-1 border-b pb-2">
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon-sm"
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
           }
           data-active={editor.isActive("heading", { level: 2 }) || undefined}
-          className="data-[active]:bg-muted"
+          className="p-1.5 rounded hover:bg-gray-100 data-[active]:bg-gray-200"
         >
           <Heading2 className="h-4 w-4" />
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="ghost"
-          size="icon-sm"
           onClick={() => editor.chain().focus().toggleBold().run()}
           data-active={editor.isActive("bold") || undefined}
-          className="data-[active]:bg-muted"
+          className="p-1.5 rounded hover:bg-gray-100 data-[active]:bg-gray-200"
         >
           <Bold className="h-4 w-4" />
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="ghost"
-          size="icon-sm"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           data-active={editor.isActive("italic") || undefined}
-          className="data-[active]:bg-muted"
+          className="p-1.5 rounded hover:bg-gray-100 data-[active]:bg-gray-200"
         >
           <Italic className="h-4 w-4" />
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="ghost"
-          size="icon-sm"
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           data-active={editor.isActive("bulletList") || undefined}
-          className="data-[active]:bg-muted"
+          className="p-1.5 rounded hover:bg-gray-100 data-[active]:bg-gray-200"
         >
           <List className="h-4 w-4" />
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="ghost"
-          size="icon-sm"
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           data-active={editor.isActive("orderedList") || undefined}
-          className="data-[active]:bg-muted"
+          className="p-1.5 rounded hover:bg-gray-100 data-[active]:bg-gray-200"
         >
           <ListOrdered className="h-4 w-4" />
-        </Button>
+        </button>
         <div className="flex-1" />
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleManualSave}
-        >
+        <Button variant="secondary" size="sm" onClick={handleManualSave}>
           {tCommon("save")}
         </Button>
       </div>

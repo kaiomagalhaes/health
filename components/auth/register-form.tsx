@@ -7,17 +7,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/lib/validators/auth";
 import { registerUser } from "@/actions/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
+  Button,
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  FormInput,
+  FormLabel,
+  ErrorAlert,
+} from "@codelittinc/backstage-design-system";
 import Link from "next/link";
 
 export function RegisterForm() {
@@ -49,77 +45,76 @@ export function RegisterForm() {
   }
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle className="text-2xl">{t("registerTitle")}</CardTitle>
-        <CardDescription>{t("registerSubtitle")}</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
+    <Card padding="lg">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-semibold">{t("registerTitle")}</h2>
+        <p className="text-sm text-gray-500 mt-1">{t("registerSubtitle")}</p>
+      </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {error && <ErrorAlert message={error} onDismiss={() => setError(null)} />}
+        <div className="space-y-1.5">
+          <FormLabel htmlFor="name">{t("name")}</FormLabel>
+          <FormInput
+            id="name"
+            type="text"
+            autoComplete="name"
+            error={!!errors.name}
+            {...register("name")}
+          />
+          {errors.name && (
+            <p className="text-sm text-red-500">{errors.name.message}</p>
           )}
-          <div className="space-y-2">
-            <Label htmlFor="name">{t("name")}</Label>
-            <Input id="name" type="text" autoComplete="name" {...register("name")} />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">{t("email")}</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">{t("password")}</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              {...register("confirmPassword")}
-            />
-            {errors.confirmPassword && (
-              <p className="text-sm text-destructive">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "..." : t("register")}
-          </Button>
-          <p className="text-sm text-muted-foreground">
-            {t("hasAccount")}{" "}
-            <Link href="/login" className="text-primary hover:underline">
-              {t("login")}
-            </Link>
-          </p>
-        </CardFooter>
+        </div>
+        <div className="space-y-1.5">
+          <FormLabel htmlFor="email">{t("email")}</FormLabel>
+          <FormInput
+            id="email"
+            type="email"
+            autoComplete="email"
+            error={!!errors.email}
+            {...register("email")}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-500">{errors.email.message}</p>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <FormLabel htmlFor="password">{t("password")}</FormLabel>
+          <FormInput
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            error={!!errors.password}
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-sm text-red-500">{errors.password.message}</p>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <FormLabel htmlFor="confirmPassword">{t("confirmPassword")}</FormLabel>
+          <FormInput
+            id="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            error={!!errors.confirmPassword}
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword && (
+            <p className="text-sm text-red-500">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+        <Button variant="primary" size="lg" disabled={loading} className="w-full">
+          {loading ? "..." : t("register")}
+        </Button>
+        <p className="text-sm text-center text-gray-500">
+          {t("hasAccount")}{" "}
+          <Link href="/login" className="text-primary hover:underline font-medium">
+            {t("login")}
+          </Link>
+        </p>
       </form>
     </Card>
   );

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { deleteAccess } from "@/actions/accesses";
 import type { SerializedAccess } from "@/actions/accesses";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, Button, EmptyState } from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import {
   Dialog,
   DialogContent,
@@ -23,8 +23,8 @@ import {
   ExternalLink,
   Trash2,
   Pencil,
+  KeyRound,
 } from "lucide-react";
-import { toast } from "sonner";
 import { AccessForm } from "./access-form";
 
 export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
@@ -66,9 +66,10 @@ export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
 
   if (accesses.length === 0) {
     return (
-      <p className="text-center text-muted-foreground py-4 text-sm">
-        {t("noAccesses")}
-      </p>
+      <EmptyState
+        message={t("noAccesses")}
+        icon={<KeyRound className="h-8 w-8" />}
+      />
     );
   }
 
@@ -77,10 +78,10 @@ export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
       <div className="space-y-2">
         {accesses.map((access) => (
           <Card key={access.id}>
-            <CardContent className="p-3 space-y-2">
+            <div className="p-3 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <Globe className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <Globe className="h-4 w-4 text-gray-400 shrink-0" />
                   <div className="min-w-0">
                     {access.description && (
                       <p className="text-sm font-medium truncate">
@@ -98,53 +99,48 @@ export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
                   </div>
                 </div>
                 <div className="flex gap-1 shrink-0">
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    onClick={() =>
-                      window.open(access.websiteUrl, "_blank")
-                    }
+                  <button
+                    className="p-1.5 rounded hover:bg-gray-100"
+                    onClick={() => window.open(access.websiteUrl, "_blank")}
                   >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
+                    <ExternalLink className="h-3.5 w-3.5 text-gray-500" />
+                  </button>
+                  <button
+                    className="p-1.5 rounded hover:bg-gray-100"
                     onClick={() => setEditingAccess(access)}
                   >
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
+                    <Pencil className="h-3.5 w-3.5 text-gray-500" />
+                  </button>
+                  <button
+                    className="p-1.5 rounded hover:bg-gray-100"
                     onClick={() => setDeleteId(access.id)}
                   >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                    <Trash2 className="h-3.5 w-3.5 text-gray-500" />
+                  </button>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-muted-foreground w-12">
+                  <span className="text-xs text-gray-500 w-12">
                     {t("login")}:
                   </span>
-                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded truncate">
+                  <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded truncate">
                     {access.login}
                   </code>
                   <button
                     type="button"
                     onClick={() => copyToClipboard(access.login)}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-gray-400 hover:text-gray-600"
                   >
                     <Copy className="h-3 w-3" />
                   </button>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xs text-muted-foreground w-12">
+                  <span className="text-xs text-gray-500 w-12">
                     {t("password")}:
                   </span>
-                  <code className="text-xs bg-muted px-1.5 py-0.5 rounded truncate">
+                  <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded truncate">
                     {visiblePasswords.has(access.id)
                       ? access.password
                       : "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"}
@@ -152,7 +148,7 @@ export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
                   <button
                     type="button"
                     onClick={() => togglePassword(access.id)}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-gray-400 hover:text-gray-600"
                   >
                     {visiblePasswords.has(access.id) ? (
                       <EyeOff className="h-3 w-3" />
@@ -163,13 +159,13 @@ export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
                   <button
                     type="button"
                     onClick={() => copyToClipboard(access.password)}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-gray-400 hover:text-gray-600"
                   >
                     <Copy className="h-3 w-3" />
                   </button>
                 </div>
               </div>
-            </CardContent>
+            </div>
           </Card>
         ))}
       </div>
@@ -205,14 +201,10 @@ export function AccessList({ accesses }: { accesses: SerializedAccess[] }) {
             <DialogDescription>{t("confirmDelete")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
+            <Button variant="secondary" onClick={() => setDeleteId(null)}>
               {tCommon("cancel")}
             </Button>
-            <Button
-              variant="destructive"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
+            <Button variant="danger" onClick={handleDelete} disabled={deleting}>
               {deleting ? "..." : tCommon("delete")}
             </Button>
           </DialogFooter>

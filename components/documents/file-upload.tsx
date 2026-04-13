@@ -3,18 +3,9 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button, FormInput, FormLabel, FormSelect } from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import { Upload, X } from "lucide-react";
-import { toast } from "sonner";
 
 interface FileUploadProps {
   personId: string;
@@ -28,7 +19,6 @@ export function FileUpload({
   onUploaded,
 }: FileUploadProps) {
   const t = useTranslations("documents");
-  const tCommon = useTranslations("common");
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -79,13 +69,17 @@ export function FileUpload({
     }
   }
 
+  const categoryOptions = (
+    ["exam", "prescription", "recording", "report", "other"] as const
+  ).map((cat) => ({ value: cat, label: t(`categories.${cat}`) }));
+
   return (
     <div className="space-y-4">
       <div
         className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
           dragOver
-            ? "border-primary bg-primary/5"
-            : "border-muted-foreground/25 hover:border-primary/50"
+            ? "border-primary bg-blue-50"
+            : "border-gray-300 hover:border-primary/50"
         }`}
         onClick={() => fileInputRef.current?.click()}
         onDragOver={(e) => {
@@ -111,7 +105,7 @@ export function FileUpload({
             <span className="text-sm font-medium truncate max-w-xs">
               {file.name}
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-gray-500">
               ({(file.size / 1024 / 1024).toFixed(1)} MB)
             </span>
             <button
@@ -120,15 +114,15 @@ export function FileUpload({
                 e.stopPropagation();
                 setFile(null);
               }}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-gray-400 hover:text-gray-600"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
         ) : (
           <div className="space-y-2">
-            <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">{t("dragDrop")}</p>
+            <Upload className="h-8 w-8 mx-auto text-gray-400" />
+            <p className="text-sm text-gray-500">{t("dragDrop")}</p>
           </div>
         )}
       </div>
@@ -137,35 +131,23 @@ export function FileUpload({
         <div className="space-y-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <Label className="text-xs">{t("category")}</Label>
-              <Select
+              <FormLabel className="text-xs">{t("category")}</FormLabel>
+              <FormSelect
                 value={category}
-                onValueChange={(v) => setCategory(v ?? "other")}
-              >
-                <SelectTrigger>
-                  <SelectValue>{t(`categories.${category}`)}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {(
-                    ["exam", "prescription", "recording", "report", "other"] as const
-                  ).map((cat) => (
-                    <SelectItem key={cat} value={cat}>
-                      {t(`categories.${cat}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(v) => setCategory(v ?? "other")}
+                options={categoryOptions}
+              />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">{t("description")}</Label>
-              <Input
+              <FormLabel className="text-xs">{t("description")}</FormLabel>
+              <FormInput
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("description")}
               />
             </div>
           </div>
-          <Button onClick={handleUpload} disabled={uploading}>
+          <Button variant="primary" onClick={handleUpload} disabled={uploading}>
             {uploading ? "..." : t("upload")}
           </Button>
         </div>

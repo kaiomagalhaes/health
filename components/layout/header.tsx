@@ -1,14 +1,11 @@
 "use client";
 
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
-
 export function Header({ title }: { title?: string }) {
+  if (!title) return null;
+
   return (
-    <header className="flex h-14 items-center gap-3 border-b px-4">
-      <SidebarTrigger />
-      <Separator orientation="vertical" className="h-6" />
-      {title && <h1 className="text-lg font-semibold">{title}</h1>}
-    </header>
+    <div className="border-b px-4 py-3 sm:px-6">
+      <h1 className="text-lg font-semibold">{title}</h1>
+    </div>
   );
 }

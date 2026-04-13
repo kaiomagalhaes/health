@@ -10,25 +10,16 @@ import {
   type AppointmentInput,
 } from "@/lib/validators/appointment";
 import { createAppointment, updateAppointment } from "@/actions/appointments";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
+  Button,
   Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  FormInput,
+  FormLabel,
+  FormSelect,
+  SectionHeader,
+} from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import type { SerializedAppointment, SerializedPerson } from "@/types";
-import { toast } from "sonner";
 import { MapPin } from "lucide-react";
 
 interface AppointmentFormProps {
@@ -50,12 +41,9 @@ export function AppointmentForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // Person select state
   const [selectedPersonId, setSelectedPersonId] = useState(
     appointment?.personId ?? defaultPersonId ?? ""
   );
-
-  // Type select state
   const [selectedType, setSelectedType] = useState<AppointmentInput["type"]>(
     appointment?.type ?? "consultation"
   );
@@ -93,13 +81,9 @@ export function AppointmentForm({
         },
   });
 
-  // Close location dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        locationRef.current &&
-        !locationRef.current.contains(e.target as Node)
-      ) {
+      if (locationRef.current && !locationRef.current.contains(e.target as Node)) {
         setLocationOpen(false);
       }
     }
@@ -126,7 +110,6 @@ export function AppointmentForm({
 
   async function onSubmit(data: AppointmentInput) {
     setLoading(true);
-
     const result = appointment
       ? await updateAppointment(appointment.id, data)
       : await createAppointment(data);
@@ -140,167 +123,127 @@ export function AppointmentForm({
     }
   }
 
+  const personOptions = persons.map((p) => ({ value: p.id, label: p.fullName }));
+  const typeOptions = (
+    ["consultation", "follow_up", "exam", "emergency", "other"] as const
+  ).map((type) => ({ value: type, label: t(`types.${type}`) }));
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          {appointment ? t("editAppointment") : t("newAppointment")}
-        </CardTitle>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>{t("person")}</Label>
-            <Select
-              value={selectedPersonId}
-              onValueChange={(value) => {
-                const v = value ?? "";
-                setSelectedPersonId(v);
-                setValue("personId", v);
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue>
-                  {selectedPersonId
-                    ? persons.find((p) => p.id === selectedPersonId)?.fullName
-                    : tPersons("selectPerson")}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {persons.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.fullName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.personId && (
-              <p className="text-sm text-destructive">
-                {errors.personId.message}
-              </p>
-            )}
-          </div>
+    <Card padding="lg">
+      <SectionHeader>
+        {appointment ? t("editAppointment") : t("newAppointment")}
+      </SectionHeader>
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
+        <div className="space-y-1.5">
+          <FormLabel required>{t("person")}</FormLabel>
+          <FormSelect
+            value={selectedPersonId}
+            onChange={(val) => {
+              setSelectedPersonId(val ?? "");
+              setValue("personId", val ?? "");
+            }}
+            options={personOptions}
+            placeholder={tPersons("selectPerson")}
+            error={!!errors.personId}
+          />
+          {errors.personId && (
+            <p className="text-sm text-red-500">{errors.personId.message}</p>
+          )}
+        </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="dateTime">{t("dateTime")}</Label>
-              <Input
-                id="dateTime"
-                type="datetime-local"
-                {...register("dateTime")}
-              />
-              {errors.dateTime && (
-                <p className="text-sm text-destructive">
-                  {errors.dateTime.message}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="durationMinutes">{t("duration")}</Label>
-              <Input
-                id="durationMinutes"
-                type="number"
-                {...register("durationMinutes", { valueAsNumber: true })}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>{t("type")}</Label>
-            <Select
-              value={selectedType}
-              onValueChange={(value) => {
-                const v = (value ?? "consultation") as AppointmentInput["type"];
-                setSelectedType(v);
-                setValue("type", v);
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue>
-                  {t(`types.${selectedType}`)}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {(
-                  [
-                    "consultation",
-                    "follow_up",
-                    "exam",
-                    "emergency",
-                    "other",
-                  ] as const
-                ).map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {t(`types.${type}`)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="doctorName">{t("doctorName")}</Label>
-              <Input id="doctorName" type="text" {...register("doctorName")} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="specialty">{t("specialty")}</Label>
-              <Input id="specialty" type="text" {...register("specialty")} />
-            </div>
-          </div>
-
-          <div className="space-y-2 relative" ref={locationRef}>
-            <Label htmlFor="location">{t("location")}</Label>
-            <Input
-              id="location"
-              type="text"
-              value={locationValue}
-              onChange={(e) => handleLocationChange(e.target.value)}
-              onFocus={() => {
-                if (existingLocations.length > 0) {
-                  setFilteredLocations(
-                    locationValue
-                      ? existingLocations.filter((loc) =>
-                          loc
-                            .toLowerCase()
-                            .includes(locationValue.toLowerCase())
-                        )
-                      : existingLocations
-                  );
-                  setLocationOpen(true);
-                }
-              }}
-              autoComplete="off"
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <FormLabel htmlFor="dateTime" required>{t("dateTime")}</FormLabel>
+            <FormInput
+              id="dateTime"
+              type="datetime-local"
+              error={!!errors.dateTime}
+              {...register("dateTime")}
             />
-            {locationOpen && filteredLocations.length > 0 && (
-              <div className="absolute z-50 mt-1 w-full rounded-lg border bg-popover p-1 shadow-md">
-                {filteredLocations.map((loc) => (
-                  <button
-                    key={loc}
-                    type="button"
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
-                    onClick={() => selectLocation(loc)}
-                  >
-                    <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                    {loc}
-                  </button>
-                ))}
-              </div>
+            {errors.dateTime && (
+              <p className="text-sm text-red-500">{errors.dateTime.message}</p>
             )}
           </div>
-        </CardContent>
-        <CardFooter className="flex gap-3">
-          <Button type="submit" disabled={loading}>
+          <div className="space-y-1.5">
+            <FormLabel htmlFor="durationMinutes">{t("duration")}</FormLabel>
+            <FormInput
+              id="durationMinutes"
+              type="number"
+              {...register("durationMinutes", { valueAsNumber: true })}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <FormLabel required>{t("type")}</FormLabel>
+          <FormSelect
+            value={selectedType}
+            onChange={(val) => {
+              const v = (val ?? "consultation") as AppointmentInput["type"];
+              setSelectedType(v);
+              setValue("type", v);
+            }}
+            options={typeOptions}
+          />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <FormLabel htmlFor="doctorName">{t("doctorName")}</FormLabel>
+            <FormInput id="doctorName" type="text" {...register("doctorName")} />
+          </div>
+          <div className="space-y-1.5">
+            <FormLabel htmlFor="specialty">{t("specialty")}</FormLabel>
+            <FormInput id="specialty" type="text" {...register("specialty")} />
+          </div>
+        </div>
+
+        <div className="space-y-1.5 relative" ref={locationRef}>
+          <FormLabel htmlFor="location">{t("location")}</FormLabel>
+          <FormInput
+            id="location"
+            type="text"
+            value={locationValue}
+            onChange={(e) => handleLocationChange(e.target.value)}
+            onFocus={() => {
+              if (existingLocations.length > 0) {
+                setFilteredLocations(
+                  locationValue
+                    ? existingLocations.filter((loc) =>
+                        loc.toLowerCase().includes(locationValue.toLowerCase())
+                      )
+                    : existingLocations
+                );
+                setLocationOpen(true);
+              }
+            }}
+            autoComplete="off"
+          />
+          {locationOpen && filteredLocations.length > 0 && (
+            <div className="absolute z-50 mt-1 w-full rounded-lg border bg-white p-1 shadow-md">
+              {filteredLocations.map((loc) => (
+                <button
+                  key={loc}
+                  type="button"
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-gray-100"
+                  onClick={() => selectLocation(loc)}
+                >
+                  <MapPin className="h-3.5 w-3.5 text-gray-400" />
+                  {loc}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3 pt-2">
+          <Button variant="primary" disabled={loading}>
             {loading ? "..." : tCommon("save")}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-          >
+          <Button type="button" variant="secondary" onClick={() => router.back()}>
             {tCommon("cancel")}
           </Button>
-        </CardFooter>
+        </div>
       </form>
     </Card>
   );

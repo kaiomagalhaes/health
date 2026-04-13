@@ -3,15 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { FormInput, FormLabel, FormSelect } from "@codelittinc/backstage-design-system";
 
 export function AppointmentFilters() {
   const t = useTranslations("appointments");
@@ -31,40 +23,31 @@ export function AppointmentFilters() {
     router.push(`/appointments?${params.toString()}`);
   }
 
+  const statusOptions = [
+    { value: "all", label: t("filters.all") },
+    ...["scheduled", "in_progress", "completed", "cancelled"].map((s) => ({
+      value: s,
+      label: t(`statuses.${s}`),
+    })),
+  ];
+
   return (
     <div className="flex flex-wrap gap-4 items-end">
       <div className="space-y-1">
-        <Label className="text-xs">{t("status")}</Label>
-        <Select
+        <FormLabel className="text-xs">{t("status")}</FormLabel>
+        <FormSelect
           value={statusFilter}
-          onValueChange={(v) => {
+          onChange={(v) => {
             const val = v ?? "all";
             setStatusFilter(val);
             updateFilter("status", val);
           }}
-        >
-          <SelectTrigger className="w-[160px]">
-            <SelectValue>
-              {statusFilter === "all"
-                ? t("filters.all")
-                : t(`statuses.${statusFilter}`)}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("filters.all")}</SelectItem>
-            {(
-              ["scheduled", "in_progress", "completed", "cancelled"] as const
-            ).map((s) => (
-              <SelectItem key={s} value={s}>
-                {t(`statuses.${s}`)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          options={statusOptions}
+        />
       </div>
       <div className="space-y-1">
-        <Label className="text-xs">{t("filters.startDate")}</Label>
-        <Input
+        <FormLabel className="text-xs">{t("filters.startDate")}</FormLabel>
+        <FormInput
           type="date"
           defaultValue={searchParams.get("startDate") ?? ""}
           onChange={(e) => updateFilter("startDate", e.target.value)}
@@ -72,8 +55,8 @@ export function AppointmentFilters() {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-xs">{t("filters.endDate")}</Label>
-        <Input
+        <FormLabel className="text-xs">{t("filters.endDate")}</FormLabel>
+        <FormInput
           type="date"
           defaultValue={searchParams.get("endDate") ?? ""}
           onChange={(e) => updateFilter("endDate", e.target.value)}

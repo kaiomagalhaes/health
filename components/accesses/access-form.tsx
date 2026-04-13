@@ -8,11 +8,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { accessSchema, type AccessInput } from "@/lib/validators/access";
 import { createAccess, updateAccess } from "@/actions/accesses";
 import type { SerializedAccess } from "@/actions/accesses";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button, FormInput, FormLabel } from "@codelittinc/backstage-design-system";
+import { toast } from "@codelittinc/backstage-design-system";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from "sonner";
 
 interface AccessFormProps {
   personId: string;
@@ -83,10 +81,10 @@ export function AccessForm({
       <input type="hidden" {...register("appointmentId")} />
 
       <div className="space-y-1.5">
-        <Label htmlFor="description" className="text-xs">
+        <FormLabel htmlFor="description" className="text-xs">
           {t("description")}
-        </Label>
-        <Input
+        </FormLabel>
+        <FormInput
           id="description"
           type="text"
           placeholder="Ex: Portal do paciente"
@@ -95,44 +93,51 @@ export function AccessForm({
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="websiteUrl" className="text-xs">
+        <FormLabel htmlFor="websiteUrl" className="text-xs" required>
           {t("websiteUrl")}
-        </Label>
-        <Input
+        </FormLabel>
+        <FormInput
           id="websiteUrl"
           type="url"
           placeholder="https://..."
+          error={!!errors.websiteUrl}
           {...register("websiteUrl")}
         />
         {errors.websiteUrl && (
-          <p className="text-xs text-destructive">{errors.websiteUrl.message}</p>
+          <p className="text-xs text-red-500">{errors.websiteUrl.message}</p>
         )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="login" className="text-xs">
+          <FormLabel htmlFor="login" className="text-xs" required>
             {t("login")}
-          </Label>
-          <Input id="login" type="text" {...register("login")} />
+          </FormLabel>
+          <FormInput
+            id="login"
+            type="text"
+            error={!!errors.login}
+            {...register("login")}
+          />
           {errors.login && (
-            <p className="text-xs text-destructive">{errors.login.message}</p>
+            <p className="text-xs text-red-500">{errors.login.message}</p>
           )}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-xs">
+          <FormLabel htmlFor="password" className="text-xs" required>
             {t("password")}
-          </Label>
+          </FormLabel>
           <div className="relative">
-            <Input
+            <FormInput
               id="password"
               type={showPassword ? "text" : "password"}
               className="pr-9"
+              error={!!errors.password}
               {...register("password")}
             />
             <button
               type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
@@ -143,15 +148,13 @@ export function AccessForm({
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-destructive">
-              {errors.password.message}
-            </p>
+            <p className="text-xs text-red-500">{errors.password.message}</p>
           )}
         </div>
       </div>
 
       <div className="flex gap-2 pt-1">
-        <Button type="submit" size="sm" disabled={loading}>
+        <Button variant="primary" size="sm" disabled={loading}>
           {loading ? "..." : tCommon("save")}
         </Button>
       </div>
